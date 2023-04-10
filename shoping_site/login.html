@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css">
+    <script src="../node_modules/jquery/dist/jquery.js"></script>
+    <script src="../node_modules/jquery.cookie/jquery.cookie.js"></script>
+    <script>
+        $(function(){
+           $("#error").html((navigator.cookieEnabled)?"cookie Enabled ":"please enable the cookie in your browser")
+           $("#btnClick").click(function(){
+            $.ajax({
+                method:"get",
+                url:"../data/users.json",
+                success:(users)=>{
+                   for(var user of users){
+                    if(user.UserName==$("#userid").val() && user.Password==$("#password").val()){
+                        $.cookie("UserId",$("#userid").val(),{expires:4});
+                        location.href="./shop.html";
+                        break;
+                    }else{
+                        $("#error").html("Invalid UserId or Password")
+                    }
+                   }
+                }
+            })
+           })
+        })
+    </script>
+</head>
+<body class="container-fluid"  >
+    <a href="./index.html">Home page</a>
+   
+    <div class="d-flex justify-content-center align-items-center" style="height: 500px;">
+        
+        <dl class=" p-2 m-2  ">
+            <h2 class="mb-2">User Login</h2>
+            <dt class="form-label">User Id</dt>
+            <dd><input type="text" name="" id="userid" class="form-control"></dd>
+            <dt class="form-label">Password</dt>
+            <dd ><input type="password" name="" id="password" class="form-control"></dd>
+            <button class="btn btn-danger" id="btnClick">Login</button>
+
+            <p id="error"></p>
+        </dl>
+        
+    </div>
+
+</body>
+</html>

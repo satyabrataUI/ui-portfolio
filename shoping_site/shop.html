@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../node_modules/jquery/dist/jquery.js"></script>
+    <script src="../node_modules/jquery.cookie/jquery.cookie.js"></script>
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css">
+    <script>
+      $(function(){
+             if($.cookie("UserId")==undefined){
+                location.href="login.html"
+             }else{
+                $("#UI").html(`hello !!${$.cookie("UserId")}`)
+             }
+            LoadCategory()
+            loadProducts("http://fakestoreapi.com/products");
+
+            $("#lstCategories").change(function(e){
+                if(e.target.value=="all"){
+                    loadProducts("http://fakestoreapi.com/products")
+                }else{
+                    loadProducts(`http://fakestoreapi.com/products/category/${e.target.value}`)
+                }
+            })
+
+           $(document).on("click","#addClick",function(e){
+            alert(`added  ${e.target.name}`)
+           })
+           $("#btnLogout").click(function(){
+            $.removeCookie("UserId");
+            location.href="login.html"
+           }) 
+      })
+      function LoadCategory(){
+        $.ajax({
+            method:"get",
+            url:"http://fakestoreapi.com/products/categories",
+            success:function(data){
+                data.unshift("all")
+                $.each(data,(property,value)=>{
+                    $(`<option value="${value}">${value.toUpperCase()}</option>`).appendTo("#lstCategories");
+                })
+            }
+        })
+      }
+      function loadProducts(url){
+        $("main").html("")
+        $.ajax({
+            method:"get",
+            url:url,
+            success:(products)=>{
+                $.each(products,(property,product)=>{
+                    $(`
+                       <div class="card p-2 m-2" style="width:200px" >
+                          <img src="${product.image}" height="100px" class="card-img-top">
+                          <div class="card-header" style="height:150px">
+                            <p>${product.title}</p>
+                          </div>
+                          <div class="card-footer">
+                             <button id="addClick" value=${product.id} name=${product.title} class="btn btn-danger text-center">Add to cart</button>
+                          </div>
+                        </div>
+                    `).appendTo("main")
+                })
+            }
+        })
+      }
+    </script>
+</head>
+<body class="container-fluid">
+    <div class="bg-black text-white text-center p-2 justify-content-between d-flex">
+        <h3>Fakestore API</h3><div id="UI"></div>
+        <button class="btn btn-danger" id="btnLogout">Logout</button>
+    </div>
+    <section class="mt-2 row">
+        <nav class="mt-2 col-2 ">
+           <label class="form-label">Select Category</label>
+           <select class="form-select"  id="lstCategories">
+
+           </select>
+        </nav>
+        <main class="d-flex flex-wrap overflow-auto col-10">
+           
+        </main>
+    </section>
+</body>
+</html>
